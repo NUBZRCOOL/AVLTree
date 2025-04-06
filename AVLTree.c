@@ -87,7 +87,8 @@ void avl_balance(AVLNode **root, AVLNode *x) {
     }
 }
 
-void avl_insert(AVLNode **root, int value) {
+void avl_insert(AVLTree *tree, int value) {
+    AVLNode **root = &(tree->root);
     AVLNode *x = *root;
     AVLNode *p = NULL;
     while (x) {
@@ -104,8 +105,10 @@ void avl_insert(AVLNode **root, int value) {
     avl_balance(root, x);
 }
 
-AVLNode *avl_search(AVLNode *root, int value) {
+AVLNode *avl_search(AVLTree tree, int value) {
     
+    AVLNode *root = tree.root;
+
     AVLNode *current = root;
 
     while (current != NULL) {
@@ -121,9 +124,11 @@ AVLNode *avl_search(AVLNode *root, int value) {
     return NULL;
 }
 
-void avl_deleteNode(AVLNode *root, int value) {
+void avl_deleteNode(AVLTree *tree, int value) {
 
-    AVLNode *x = avl_search(root, value);
+    AVLNode *root = tree->root;
+
+    AVLNode *x = avl_search(*tree, value);
     if (!x) { return; }
 
     if (!x->left && !x->right) {
@@ -183,7 +188,9 @@ void avl_deleteNode(AVLNode *root, int value) {
     avl_balance(&root, x);
 }
 
-void avl_inorderTraversal(AVLNode *root, void (*task)()) {
+void avl_inorderTraversal(AVLTree tree, void (*task)()) {
+
+    AVLNode *root = tree.root;
 
     if (root == NULL) { return; }
 

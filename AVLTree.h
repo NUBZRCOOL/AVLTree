@@ -5,7 +5,7 @@
 typedef struct AVLNode {
 
     int value;
-    int count;
+    unsigned int count;
     int height;
     struct AVLNode *left;
     struct AVLNode *right;
@@ -32,13 +32,13 @@ void avl_rotateRight(AVLNode **root, AVLNode *x);
 
 void avl_balance(AVLNode **root, AVLNode *x);
 
-void avl_insert(AVLNode **root, int value);
+void avl_insert(AVLTree *tree, int value);
 
-AVLNode *avl_search(AVLNode *root, int value);
+AVLNode *avl_search(AVLTree tree, int value);
 
-void avl_deleteNode(AVLNode *root, int value);
+void avl_deleteNode(AVLTree *tree, int value);
 
-void avl_inorderTraversal(AVLNode *root, void (*task)());
+void avl_inorderTraversal(AVLTree tree, void (*task)());
 
 void avl_displayTree(AVLNode *root, int space);
 
