@@ -124,68 +124,52 @@ AVLNode *avl_search(AVLTree tree, int value) {
     return NULL;
 }
 
+void transplant(AVLTree *tree, AVLNode *u, AVLNode *v) {
+    if (!u->parent) {
+        tree->root = v;
+    } else if (u == u->parent->left) {
+        u->parent->left = v;
+    } else {
+        u->parent->right = v;
+    }
+    if (v) {
+        v->parent = u->parent;
+    }
+}
+
 void avl_deleteNode(AVLTree *tree, int value) {
 
-    AVLNode *root = tree->root;
+    AVLNode *z = avl_search(*tree, value);
+    if (!z) return;
 
-    AVLNode *x = avl_search(*tree, value);
-    if (!x) { return; }
+    AVLNode *rebalanceStart = NULL;
 
-    if (!x->left && !x->right) {
-
-        if (x == root) { root = NULL; }
-
-        if (x == x->parent->left) {
-            x->parent->left = NULL;
-        } else {
-            x->parent->right = NULL;
-        }
-
-    } else if (!x->left) {
-
-        AVLNode *child = x->right;
-        if (x == root) {
-            root = child;
-        } else if (x == x->parent->left) {
-            x->parent->left = child;
-        } else {
-            x->parent->right = child;
-        }
-        child->parent = x->parent;
-
-    } else if (!x->right) {
-        
-        AVLNode *child = x->left;
-        if (x == root) {
-            root = child;
-        } else if (x == x->parent->left) {
-            x->parent->left = child;
-        } else {
-            x->parent->right = child;
-        }
-        child->parent = x->parent;
-
+    if (!z->left) {
+        rebalanceStart = z->parent;
+        transplant(tree, z, z->right);
+    } else if (!z->right) {
+        rebalanceStart = z->parent;
+        transplant(tree, z, z->left);
     } else {
+        AVLNode *y = z->left;
+        while (y->right) y = y->right;
 
-        // find inorder predecessor
-        AVLNode *pred = x->left;
-        while (pred->right) { pred = pred->right; }
-
-        x->value = pred->value;
-        x->count = pred->count;
-
-        if (pred->left) {
-            if (pred == pred->parent->left) { pred->parent->left = pred->left; }
-            else { pred->parent->right = pred->right; }
-            pred->left->parent = pred->parent;
+        if (y->parent != z) {
+            rebalanceStart = y->parent;
+            transplant(tree, y, y->left);
+            y->left = z->left;
+            y->left->parent = y;
         } else {
-            if (pred == pred->parent->left) { pred->parent->left = NULL; }
-            else { pred->parent->right = NULL; }
+            rebalanceStart = y;
         }
-        x = pred->parent;
-    }
 
-    avl_balance(&root, x);
+        transplant(tree, z, y);
+
+        y->right = z->right;
+        y->right->parent = y;
+    }
+    free(z);
+    if (rebalanceStart) avl_balance(&tree->root, rebalanceStart);
 }
 
 void avl_inorderTraversal(AVLTree tree, void (*task)()) {
@@ -219,7 +203,6 @@ void avl_inorderTraversal(AVLTree tree, void (*task)()) {
             }
         }
     }
-    printf("\n");
 }
 
 void avl_displayTree(AVLNode *root, int space) {

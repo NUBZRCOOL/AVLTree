@@ -36,6 +36,8 @@ void avl_insert(AVLTree *tree, int value);
 
 AVLNode *avl_search(AVLTree tree, int value);
 
+void transplant(AVLTree *tree, AVLNode *u, AVLNode *v);
+
 void avl_deleteNode(AVLTree *tree, int value);
 
 void avl_inorderTraversal(AVLTree tree, void (*task)());

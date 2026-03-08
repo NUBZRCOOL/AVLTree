@@ -40,6 +40,7 @@ int main() {
 
     printf("Nodes in order: ");
     avl_inorderTraversal(tree, doPrint);
+    printf("\n");
     printf("Tree depth: %d \n", tree.root->height + 1);
 
     val = avl_search(tree, num);
